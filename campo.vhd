@@ -4,8 +4,8 @@ use ieee.numeric_std.all;
 
 entity campo is
 	port ( w_en, clk, rst_geral, collision: in std_logic;
-			 i : in unsigned (3 downto 0);
-			 j : in unsigned (4 downto 0);
+			 i : in integer range 0 to 19;
+			 j : in integer range 0 to 9;
 			 data_in : in std_logic;
 			 data_out, linhas_checadas : out std_logic := '0');
 end campo;
