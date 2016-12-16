@@ -37,8 +37,8 @@ COMPONENT image_generator IS
 	 red      			:  OUT  STD_LOGIC_VECTOR(7 DOWNTO 0);  --red magnitude output to DAC
     green    			:  OUT  STD_LOGIC_VECTOR(7 DOWNTO 0) ;  --green magnitude output to DAC
     blue     			:	OUT  STD_LOGIC_VECTOR(7 DOWNTO 0); --blue magnitude output to DAC
-	 i 					: 	OUT UNSIGNED(4 DOWNTO 0);
-	 j 					: 	OUT UNSIGNED(3 DOWNTO 0));
+	 i 					: 	OUT INTEGER range -2 to 19;
+	 j 					: 	OUT INTEGER range 0 to 9);
 END COMPONENT;
 
 component pll IS
@@ -49,16 +49,27 @@ component pll IS
 		c0		: OUT STD_LOGIC 
 	);
 END component;
+component campo is
+	port ( w_en, clk, rst_geral, collision: in std_logic;
+			 i : in integer range 0 to 19;
+			 j : in integer range 0 to 9;
+			 data_in : in std_logic;
+			 data_out : out std_logic := '0');
+end component;
+
 
 signal row, column : INTEGER;
-signal c0, d_en, status : STD_LOGIC;
-signal i : unsigned(4 downto 0);
-signal j : unsigned(3 downto 0);
+signal c0, d_en, status, linhas_checadas : STD_LOGIC;
+signal i : integer range -2 to 19;
+signal j : integer range 0 to 9;
+
 begin
+
 	pixel_clk <= c0;
 	p: pll port map ('0', clk, c0);
 	c: vga_controller port map (c0, '1', h_sync, v_sync, d_en, column, row, n_blank, n_sync);
 	ig: image_generator port map (d_en, row, column, status, red, green, blue, i, j);
+	t : campo port map ('0', clk, '0', '0', i, j, '0', status);
 end behavior;
 
 

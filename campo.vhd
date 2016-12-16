@@ -7,7 +7,7 @@ entity campo is
 			 i : in integer range 0 to 19;
 			 j : in integer range 0 to 9;
 			 data_in : in std_logic;
-			 data_out, linhas_checadas : out std_logic := '0');
+			 data_out : out std_logic := '0');
 end campo;
 
 architecture behavior of campo is
@@ -16,6 +16,8 @@ architecture behavior of campo is
 	signal Matriz_Temporaria : Matriz;
 	signal Matriz_WEnables: Matriz;
 	signal MT_Preenchida : std_logic := '0';
+	signal lc0, mtp1 : std_logic;
+	
 	
 	component ffd
 		port ( w_en, clk, rst : in std_logic;
@@ -34,30 +36,31 @@ begin
 		end generate FFD_GEN_X;
    end generate FFD_GEN_Y;
 	
-	-------------------------------- TESTE
-	MT_Preenchida <= '1';
+	data_out <= Matriz_Campo(i, j);
 	
-	FFD_TEMP_Y: for y in 0 to 19 generate
-		FFD_TEMP_X: for x in 0 to 9 generate
-			PREENCHE1: if (x > 2 and x < 7 and y > 5 and y < 14) generate
-				Matriz_Temporaria(y,x) <= '1';
-			end generate PREENCHE1;
-			PREENCHE0: if (x < 2 and x > 7 and y < 5 and y > 14) generate
-				Matriz_Temporaria(y,x) <= '0';
-			end generate PREENCHE0;
-		end generate FFD_TEMP_X;
-   end generate FFD_TEMP_Y;
+	-------------------------------- TESTE
+--	MT_Preenchida <= '1';
+		
+		
+		
+--	FFD_TEMP_Y: for y in 0 to 19 generate
+--		FFD_TEMP_X: for x in 0 to 9 generate
+--			PREENCHE1: if (x > 2 and x < 7 and y > 5 and y < 14) generate
+--				Matriz_Temporaria(y,x) <= '1';
+--			end generate PREENCHE1;
+--			PREENCHE0: if (x < 2 and x > 7 and y < 5 and y > 14) generate
+--				Matriz_Temporaria(y,x) <= '0';
+--			end generate PREENCHE0;
+--		end generate FFD_TEMP_X;
+--   end generate FFD_TEMP_Y;
 	
 	--------------------------------------
 	
-	
-	CHECK_LINES: process(collision) --Process que checa se alguma linha foi completamente preenchida
+	CHECK_LINES: process(collision, clk) --Process que checa se alguma linha foi completamente preenchida
 		variable full : std_logic := '1';
 		variable contador_de_linha : integer := 19;
 	begin
-		linhas_checadas <= '0';
-		if(rising_edge(collision)) then --se houver colisão, entao...
-			
+		if(collision = '1' and MT_preenchida = '0') then --se houver colisão, entao...
 			-- Loop para, primeiramente, zerar a Matriz temporaria
 			for M in 19 downto 0 loop
 				for N in 0 to 9 loop
@@ -77,14 +80,9 @@ begin
 				end if;
 			end loop;
 			
-			MT_Preenchida <= '1'; -- aciona a flag dizendo que a matriz temporaria foi completamente preenchida
-			
-			wait until rising_edge(clk);
-			
-			linhas_checadas <= '1';
-			
-			MT_Preenchida <= '0';
-			
+			MT_preenchida <= '1';
+		elsif(rising_edge(clk) and MT_preenchida = '1') then
+			MT_preenchida <= '0';
 		end if;
 	end process;
 end behavior;
