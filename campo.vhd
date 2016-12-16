@@ -24,16 +24,31 @@ architecture behavior of campo is
 	end component ffd;
 begin		
 	
-	
 	FFD_GEN_Y: for y in 0 to 19 generate
 		FFD_GEN_X: for x in 0 to 9 generate
-			Matriz_WEnables(y,x) <= '1' when ((y = i and x = j) or (MT_Preenchida = '1')) else '0'; --se a matriz temporaria estiver preenchida, todos wenables sao ativados
+			Matriz_WEnables(y,x) <= '1' when ((y = i and x = j and w_en = '1') or (MT_Preenchida = '1')) else '0'; --se a matriz temporaria estiver preenchida, todos wenables sao ativados
 	
 			FFDS: ffd port map 
 				--se a matriz temporaria estiver totalmente preenchida, ela toda serve de entrada pra matriz principal. Caso contrario, cada FF recebe como entrada o data_in normalmente
 				(w_en => Matriz_WEnables(y,x), clk => clk, rst => rst_geral, data_in => ((data_in and not(MT_Preenchida)) or (Matriz_Temporaria(y,x) and MT_Preenchida)), data_out => Matriz_Campo(y,x));
 		end generate FFD_GEN_X;
    end generate FFD_GEN_Y;
+	
+	-------------------------------- TESTE
+	MT_Preenchida <= '1';
+	
+	FFD_TEMP_Y: for y in 0 to 19 generate
+		FFD_TEMP_X: for x in 0 to 9 generate
+			PREENCHE1: if (x > 2 and x < 7 and y > 5 and y < 14) generate
+				Matriz_Temporaria(y,x) <= '1';
+			end generate PREENCHE1;
+			PREENCHE0: if (x < 2 and x > 7 and y < 5 and y > 14) generate
+				Matriz_Temporaria(y,x) <= '0';
+			end generate PREENCHE0;
+		end generate FFD_TEMP_X;
+   end generate FFD_TEMP_Y;
+	
+	--------------------------------------
 	
 	
 	CHECK_LINES: process(collision) --Process que checa se alguma linha foi completamente preenchida
