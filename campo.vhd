@@ -57,7 +57,15 @@ begin
 	begin
 		linhas_checadas <= '0';
 		if(rising_edge(collision)) then --se houver colisão, entao...
+			
+			-- Loop para, primeiramente, zerar a Matriz temporaria
+			for M in 19 downto 0 loop
+				for N in 0 to 9 loop
+					Matriz_Temporaria(M, N) <= '0';
+				end loop;
+			end loop;			
 		
+			-- Loop para identificar as linhas cheias e eliminá-las, colocando somente as não-cheias na Matriz temporaria
 			for a in 19 downto 0 loop
 				full := Matriz_Campo(a,0) and Matriz_Campo(a,1) and Matriz_Campo(a,2) and Matriz_Campo(a,3) and Matriz_Campo(a,4) and Matriz_Campo(a,5) and Matriz_Campo(a,6) and Matriz_Campo(a,7) and Matriz_Campo(a,8) and Matriz_Campo(a,9);
 				
@@ -67,12 +75,6 @@ begin
 					end loop;
 					contador_de_linha := contador_de_linha - 1;
 				end if;
-			end loop;
-			
-			for c in contador_de_linha downto 0 loop
-				for d in 0 to 9 loop
-					Matriz_Temporaria(c, d) <= '0'; --preenche as linhas que sobraram com zeros
-				end loop;
 			end loop;
 			
 			MT_Preenchida <= '1'; -- aciona a flag dizendo que a matriz temporaria foi completamente preenchida
