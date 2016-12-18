@@ -4,10 +4,15 @@ use ieee.numeric_std.all;
 
 entity campo is
 	port ( w_en, clk, rst_geral, collision: in std_logic;
-			 i : in integer range 0 to 19;
-			 j : in integer range 0 to 9;
+			 i_vga : in integer range 0 to 19;
+			 j_vga : in integer range 0 to 9;
+			 i_write : in integer range 0 to 19;
+			 j_write : in integer range 0 to 9; 
+			 i_read : in integer range 0 to 19; 
+			 j_read : in integer range 0 to 9; 
 			 data_in : in std_logic;
-			 data_out : out std_logic := '0');
+			 data_out_vga : out std_logic := '0';
+			 data_out_read : out std_logic := '0');
 end campo;
 
 architecture behavior of campo is
@@ -28,7 +33,7 @@ begin
 	
 	FFD_GEN_Y: for y in 0 to 19 generate
 		FFD_GEN_X: for x in 0 to 9 generate
-			Matriz_WEnables(y,x) <= '1' when ((y = i and x = j and w_en = '1') or (MT_Preenchida = '1')) else '0'; --se a matriz temporaria estiver preenchida, todos wenables sao ativados
+			Matriz_WEnables(y,x) <= '1' when ((y = i_write and x = j_write and w_en = '1') or (MT_Preenchida = '1')) else '0'; --se a matriz temporaria estiver preenchida, todos wenables sao ativados
 	
 			FFDS: ffd port map 
 				--se a matriz temporaria estiver totalmente preenchida, ela toda serve de entrada pra matriz principal. Caso contrario, cada FF recebe como entrada o data_in normalmente
@@ -36,7 +41,8 @@ begin
 		end generate FFD_GEN_X;
    end generate FFD_GEN_Y;
 	
-	data_out <= Matriz_Campo(i, j);
+	data_out_vga <= Matriz_Campo(i_vga, j_vga);
+	data_out_read <= Matriz_Campo(i_read, j_read);
 	
 	-------------------------------- TESTE
 --	MT_Preenchida <= '1';
