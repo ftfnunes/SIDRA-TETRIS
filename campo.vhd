@@ -66,7 +66,7 @@ begin
 		variable full : std_logic := '1';
 		variable contador_de_linha : integer := 19;
 	begin
-		if(collision = '1' and MT_preenchida = '0') then --se houver colisão, entao...
+		if(collision = '1' and MT_preenchida = '0' and rising_edge(clk)) then --se houver colisÃ£o, entao...
 			-- Loop para, primeiramente, zerar a Matriz temporaria
 			for M in 19 downto 0 loop
 				for N in 0 to 9 loop
@@ -74,7 +74,7 @@ begin
 				end loop;
 			end loop;			
 		
-			-- Loop para identificar as linhas cheias e eliminá-las, colocando somente as não-cheias na Matriz temporaria
+			-- Loop para identificar as linhas cheias e eliminÃ¡-las, colocando somente as nÃ£o-cheias na Matriz temporaria
 			for a in 19 downto 0 loop
 				full := Matriz_Campo(a,0) and Matriz_Campo(a,1) and Matriz_Campo(a,2) and Matriz_Campo(a,3) and Matriz_Campo(a,4) and Matriz_Campo(a,5) and Matriz_Campo(a,6) and Matriz_Campo(a,7) and Matriz_Campo(a,8) and Matriz_Campo(a,9);
 				
