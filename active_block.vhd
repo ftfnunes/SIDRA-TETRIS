@@ -21,7 +21,7 @@ signal j1buf, j2buf , j3buf, j4buf: integer range -2 to 19 := 0;
 begin
 -- Os pulsos collision, start, wren, control_clk so podem ficar igual 
 -- a '1' durante um rising_edge de clk.
--- CLK é o clock rápido que controla todo o sistema.
+-- CLK Ã© o clock rÃ¡pido que controla todo o sistema.
 init: process(clk)
 -- In every rising edge of the signal collision, a new type is received 
 -- and a new block is placed on the screen. The signal collision means that
@@ -32,8 +32,8 @@ begin
 			case block_type is
 				when "000" => 
 			-- 		The type 0 is the bar: (i1-j1)(i2-j2)(i3-j3)(i4-j4)
-						i1out <= -2; i2out <= -2; i3out <= -2; i4out <= -2;
-						i1buf <= -2; i2buf <= -2; i3buf <= -2; i4buf <= -2;
+						i1out <= -1; i2out <= -1; i3out <= -1; i4out <= -1;
+						i1buf <= -1; i2buf <= -1; i3buf <= -1; i4buf <= -1;
 						j1out <= 3; j2out <= 4; j3out <= 5; j4out <= 6;
 						j1buf <= 3; j2buf <= 4; j3buf <= 5; j4buf <= 6;
 				when "001" =>
