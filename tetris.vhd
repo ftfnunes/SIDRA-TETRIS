@@ -16,7 +16,8 @@ entity tetris is PORT(
 	 h_sync			:	OUT	STD_LOGIC;	--horiztonal sync pulse
 	 v_sync			:	OUT	STD_LOGIC;	--vertical sync pulse
 	 n_blank			:	OUT	STD_LOGIC;	--direct blacking output to DAC
-	 n_sync			:	OUT	STD_LOGIC --sync-on-green output to DAC
+	 n_sync			:	OUT	STD_LOGIC; --sync-on-green output to DAC
+	 turnoff_dot	:	OUT	STD_LOGIC_VECTOR(3 downto 0) --signals used to turn off the dot from the 7 segment display
 );
 end tetris;
 
@@ -110,6 +111,7 @@ signal seed : STD_LOGIC_VECTOR(30 downto 0);
 
 begin
 
+	turnoff_dot <= (others => '1');
 	pixel_clk <= c0;
 	
 	p: pll port map ('0', clk, c0);
@@ -124,7 +126,7 @@ begin
 	bcd_to_7seg_0 : bcd_to_7seg port map (tst_clk, score0, score0_7seg);
 	
 	
-	teste_campo: process(clk)
+	teste_campo: process(clk, tst_clk)
 		variable cont : INTEGER := 0;
 	begin
 		if(rising_edge(tst_clk)) then

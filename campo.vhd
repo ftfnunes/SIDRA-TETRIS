@@ -14,7 +14,7 @@ entity campo is
 			 data_out_vga : out std_logic := '0';
 			 data_out_read : out std_logic := '0';
 			 speedup : buffer std_logic := '0';
-			 score3, score2, score1, score0 : buffer integer range 0 to 9 := 2);
+			 score3, score2, score1, score0 : buffer integer range 0 to 9 := 0);
 end campo;
 
 architecture behavior of campo is
@@ -22,6 +22,7 @@ architecture behavior of campo is
 	signal Matriz_Campo : Matriz;
 	signal Matriz_Temporaria : Matriz;
 	signal Matriz_WEnables: Matriz;
+	--signal aux: Matriz;
 	signal MT_Preenchida : std_logic := '0';
 	signal lc0, mtp1 : std_logic;
 	signal line_kill_counter : integer range 0 to 10 := 0;
@@ -33,14 +34,17 @@ architecture behavior of campo is
 				 data_out : out std_logic := '0');
 	end component ffd;
 begin		
-	
+
 	FFD_GEN_Y: for y in 0 to 19 generate
 		FFD_GEN_X: for x in 0 to 9 generate
 			Matriz_WEnables(y,x) <= '1' when ((y = i_write and x = j_write and w_en = '1') or (MT_Preenchida = '1')) else '0'; --se a matriz temporaria estiver preenchida, todos wenables sao ativados
 	
+			--aux(y,x) <= ((data_in and not(MT_Preenchida)) or (Matriz_Temporaria(y,x) and MT_Preenchida));
+	
 			FFDS: ffd port map 
 				--se a matriz temporaria estiver totalmente preenchida, ela toda serve de entrada pra matriz principal. Caso contrario, cada FF recebe como entrada o data_in normalmente
 				(w_en => Matriz_WEnables(y,x), clk => clk, rst => rst_geral, data_in => ((data_in and not(MT_Preenchida)) or (Matriz_Temporaria(y,x) and MT_Preenchida)), data_out => Matriz_Campo(y,x));
+				--(w_en => Matriz_WEnables(y,x), clk => clk, rst => rst_geral, data_in => aux(y,x), data_out => Matriz_Campo(y,x));
 		end generate FFD_GEN_X;
    end generate FFD_GEN_Y;
 	
@@ -65,11 +69,17 @@ begin
 	
 	--------------------------------------
 	
-	CHECK_LINES: process(collision, clk) --Process que checa se alguma linha foi completamente preenchida
+	CHECK_LINES: process(collision, clk, rst_geral) --Process que checa se alguma linha foi completamente preenchida
 		variable full : std_logic := '1';
 		variable contador_de_linha : integer := 19;
 	begin
-		if(collision = '1' and MT_preenchida = '0' and rising_edge(clk)) then --se houver colisÃ£o, entao...
+		if(rst_geral = '1') then
+			score3 <= 0;
+			score2 <= 0;
+			score1 <= 0;
+			score0 <= 0;
+		elsif(collision = '1' and MT_preenchida = '0' and rising_edge(clk)) then --se houver colisÃ£o, entao...
+			contador_de_linha := 19;
 			-- Loop para, primeiramente, zerar a Matriz temporaria
 			for M in 19 downto 0 loop
 				for N in 0 to 9 loop
@@ -86,6 +96,7 @@ begin
 						Matriz_Temporaria(contador_de_linha, b) <= Matriz_Campo(a, b);
 					end loop;
 					contador_de_linha := contador_de_linha - 1;
+				
 				else -- caso esteja, aumenta os pontos do jogador e incrementa a quantidade de linhas eliminadas (sendo o maximo de contagem de 10 linhas)
 					if(score0 = 9) then -- ifs aninhados que atualizam cada um dos bcds 
 						score0 <= 0;
@@ -109,6 +120,7 @@ begin
 					elsif(line_kill_counter = 10) then
 						line_kill_counter <= 1; -- considerando o valor max sendo 10, ao chegar nele, volta pra 1.
 					end if;
+				
 				end if;
 			end loop;
 			
@@ -122,7 +134,7 @@ begin
 	begin
 		if(rising_edge(clk) and (line_kill_counter = 10) and (speedup = '0')) then -- de 10 em 10 linhas eliminadas, aumena a velocidade
 			speedup <= '1';
-		elsif(rising_edge(clk) and (speedup = '1')) then
+		elsif(rising_edge(clk) and (speedup /= '0')) then
 			speedup <= '0';
 		end if;
 	end process;

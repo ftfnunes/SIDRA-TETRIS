@@ -84,6 +84,7 @@ set_location_assignment PIN_AD10 -to score0_7seg[3]
 set_location_assignment PIN_AF10 -to score0_7seg[2]
 set_location_assignment PIN_AD11 -to score0_7seg[1]
 set_location_assignment PIN_AD12 -to score0_7seg[0]
+set_location_assignment PIN_AF12 -to turnoff_dot[0]
 set_location_assignment PIN_AG13 -to score1_7seg[6]
 set_location_assignment PIN_AE16 -to score1_7seg[5]
 set_location_assignment PIN_AF16 -to score1_7seg[4]
@@ -91,6 +92,7 @@ set_location_assignment PIN_AG16 -to score1_7seg[3]
 set_location_assignment PIN_AE17 -to score1_7seg[2]
 set_location_assignment PIN_AF17 -to score1_7seg[1]
 set_location_assignment PIN_AD17 -to score1_7seg[0]
+set_location_assignment PIN_AC17 -to turnoff_dot[1]
 set_location_assignment PIN_AE7 -to score2_7seg[6]
 set_location_assignment PIN_AF7 -to score2_7seg[5]
 set_location_assignment PIN_AH5 -to score2_7seg[4]
@@ -98,6 +100,7 @@ set_location_assignment PIN_AG4 -to score2_7seg[3]
 set_location_assignment PIN_AB18 -to score2_7seg[2]
 set_location_assignment PIN_AB19 -to score2_7seg[1]
 set_location_assignment PIN_AE19 -to score2_7seg[0]
+set_location_assignment PIN_AC19 -to turnoff_dot[2]
 set_location_assignment PIN_P6 -to score3_7seg[6]
 set_location_assignment PIN_P4 -to score3_7seg[5]
 set_location_assignment PIN_N10 -to score3_7seg[4]
@@ -105,7 +108,7 @@ set_location_assignment PIN_N7 -to score3_7seg[3]
 set_location_assignment PIN_M8 -to score3_7seg[2]
 set_location_assignment PIN_M7 -to score3_7seg[1]
 set_location_assignment PIN_M6 -to score3_7seg[0]
-set_location_assignment PIN_M4 -to '1'
+set_location_assignment PIN_M4 -to turnoff_dot[3]
 
 set_location_assignment PIN_C15 -to n_blank
 set_location_assignment PIN_D24 -to pixel_clk
@@ -114,6 +117,10 @@ set_location_assignment PIN_H19 -to v_sync
 set_location_assignment PIN_B15 -to n_sync
 set_location_assignment PIN_AD15 -to clk
 set_location_assignment PIN_T29 -to tst_clk
+set_global_assignment -name VHDL_FILE tetris_tb.vhd
+set_global_assignment -name VHDL_FILE teste_tb.vhd
+set_global_assignment -name VHDL_FILE teste.vhd
+set_global_assignment -name VHDL_FILE campo_tb.vhd
 set_global_assignment -name VHDL_FILE vga_controller.vhd
 set_global_assignment -name VHDL_FILE timer_tb.vhd
 set_global_assignment -name VHDL_FILE timer.vhd
@@ -126,4 +133,10 @@ set_global_assignment -name VHDL_FILE ffd.vhd
 set_global_assignment -name VHDL_FILE campo.vhd
 set_global_assignment -name VHDL_FILE active_block.vhd
 set_global_assignment -name VHDL_FILE bcd_to_7seg.vhd
+set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH tetris_tb -section_id eda_simulation
+set_global_assignment -name EDA_TEST_BENCH_NAME tetris_tb -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME i1 -section_id tetris_tb
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tetris_tb -section_id tetris_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE tetris_tb.vhd -section_id tetris_tb
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
