@@ -5,15 +5,18 @@ use ieee.math_real.all;
 
 entity tetris is PORT(
 	 clk, tst_clk		 	:  IN	STD_LOGIC;
-	 pixel_clk	:	OUT STD_LOGIC;	 
-	 red      	:  OUT  STD_LOGIC_VECTOR(7 DOWNTO 0);  --red magnitude output to DAC
-	 green    	:  OUT  STD_LOGIC_VECTOR(7 DOWNTO 0);  --green magnitude output to DAC
-	 blue     	:  OUT  STD_LOGIC_VECTOR(7 DOWNTO 0);
-	 segment7	:	OUT	std_logic_vector(6 downto 0);
-	 h_sync		:	OUT	STD_LOGIC;	--horiztonal sync pulse
-	 v_sync		:	OUT	STD_LOGIC;	--vertical sync pulse
-	 n_blank		:	OUT	STD_LOGIC;	--direct blacking output to DAC
-	 n_sync		:	OUT	STD_LOGIC --sync-on-green output to DAC
+	 pixel_clk		:	OUT STD_LOGIC;	 
+	 red      		:  OUT  STD_LOGIC_VECTOR(7 DOWNTO 0);  --red magnitude output to DAC
+	 green    		:  OUT  STD_LOGIC_VECTOR(7 DOWNTO 0);  --green magnitude output to DAC
+	 blue     		:  OUT  STD_LOGIC_VECTOR(7 DOWNTO 0);
+	 score3_7seg	:	OUT	std_logic_vector(6 downto 0); -- Most significant digit of the score (in 7 segment format)
+	 score2_7seg	:	OUT	std_logic_vector(6 downto 0);
+	 score1_7seg	:	OUT	std_logic_vector(6 downto 0);
+	 score0_7seg	:	OUT	std_logic_vector(6 downto 0); -- Less significant digit of the score (in 7 segment format)
+	 h_sync			:	OUT	STD_LOGIC;	--horiztonal sync pulse
+	 v_sync			:	OUT	STD_LOGIC;	--vertical sync pulse
+	 n_blank			:	OUT	STD_LOGIC;	--direct blacking output to DAC
+	 n_sync			:	OUT	STD_LOGIC --sync-on-green output to DAC
 );
 end tetris;
 
@@ -63,7 +66,9 @@ component campo is
 			 j_read : in integer range 0 to 9; 
 			 data_in : in std_logic;
 			 data_out_vga : out std_logic := '0';
-			 data_out_read : out std_logic := '0');
+			 data_out_read : out std_logic := '0';
+			 speedup : buffer std_logic := '0';
+			 score3, score2, score1, score0 : buffer integer range 0 to 9 := 0);
 end component;
 
 component active_block is
@@ -85,25 +90,38 @@ component random_uniform is
 			  reset : in  STD_LOGIC);
 end component;
 
+component bcd_to_7seg is
+port (clk : in std_logic;
+      bcd : in integer range 0 to 9;  --BCD input
+      segment7 : out std_logic_vector(6 downto 0)  -- 7 bit decoded output.
+     );
+end component;
+
 signal row, column : INTEGER;
-signal c0, d_en, d_out_vga, d_out, d_in, rnd_rst : STD_LOGIC;
+signal c0, d_en, d_out_vga, d_out, d_in, rnd_rst, speedup : STD_LOGIC;
 signal collision, w_en, control_clk, start, wren_active, r_m, l_m: STD_LOGIC := '0';
 signal i1_active, i2_active, i3_active, i4_active, i1, i2, i3, i4 : INTEGER range -2 to 19;
 signal j1_active, j2_active, j3_active, j4_active, j1, j2, j3, j4 : INTEGER range 0 to 9;
 signal i_vga, i_r, i_wr : integer range 0 to 19;
 signal j_vga, j_r, j_wr : integer range 0 to 9;
+signal score3, score2, score1, score0 : integer range 0 to 9;
 signal block_type : integer range 0 to 6;
 signal seed : STD_LOGIC_VECTOR(30 downto 0); 
+
 begin
 
 	pixel_clk <= c0;
+	
 	p: pll port map ('0', clk, c0);
 	c: vga_controller port map (c0, '1', h_sync, v_sync, d_en, column, row, n_blank, n_sync);
 	ig: image_generator port map (d_en, row, column,  i1_active, i2_active, i3_active, i4_active, j1_active, j2_active, j3_active, j4_active, d_out_vga, red, green, blue, i_vga, j_vga);
-	t : campo port map (w_en, tst_clk, '0', collision, i_vga, j_vga, i_wr, j_wr, i_r, j_r, d_in, d_out_vga, d_out);
+	t : campo port map (w_en, tst_clk, '0', collision, i_vga, j_vga, i_wr, j_wr, i_r, j_r, d_in, d_out_vga, d_out, speedup, score3, score2, score1, score0);
 	ab : active_block port map (tst_clk, control_clk, start, collision, wren_active, r_m, l_m, block_type, i1, i2, i3, i4, j1, j2, j3, j4, i1_active, i2_active, i3_active, i4_active, j1_active, j2_active, j3_active, j4_active);
 	rand : random_uniform port map (clk, block_type, seed, rnd_rst);
-	
+	bcd_to_7seg_3 : bcd_to_7seg port map (tst_clk, score3, score3_7seg);
+	bcd_to_7seg_2 : bcd_to_7seg port map (tst_clk, score2, score2_7seg);
+	bcd_to_7seg_1 : bcd_to_7seg port map (tst_clk, score1, score1_7seg);
+	bcd_to_7seg_0 : bcd_to_7seg port map (tst_clk, score0, score0_7seg);
 	
 	
 	teste_campo: process(clk)
@@ -284,22 +302,5 @@ begin
 			end if;
 		end if;
 	end process;
-	
-	process (clk,block_type)
-BEGIN
-if (clk'event and clk='1') then
-case  block_type is
-when 0=> segment7 <="0000001";  -- '0'
-when 1=> segment7 <="1001111";  -- '1'
-when 2=> segment7 <="0010010";  -- '2'
-when 3=> segment7 <="0000110";  -- '3'
-when 4=> segment7 <="1001100";  -- '4' 
-when 5=> segment7 <="0100100";  -- '5'
-when 6=> segment7 <="0100000";  -- '6'
-when others => segment7 <="0001111";  -- '7'
-end case;
-end if;
-
-end process;
 	
 end behavior;

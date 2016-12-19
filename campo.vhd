@@ -12,7 +12,9 @@ entity campo is
 			 j_read : in integer range 0 to 9; 
 			 data_in : in std_logic;
 			 data_out_vga : out std_logic := '0';
-			 data_out_read : out std_logic := '0');
+			 data_out_read : out std_logic := '0';
+			 speedup : buffer std_logic := '0';
+			 score3, score2, score1, score0 : buffer integer range 0 to 9 := 2);
 end campo;
 
 architecture behavior of campo is
@@ -22,6 +24,7 @@ architecture behavior of campo is
 	signal Matriz_WEnables: Matriz;
 	signal MT_Preenchida : std_logic := '0';
 	signal lc0, mtp1 : std_logic;
+	signal line_kill_counter : integer range 0 to 10 := 0;
 	
 	
 	component ffd
@@ -83,6 +86,29 @@ begin
 						Matriz_Temporaria(contador_de_linha, b) <= Matriz_Campo(a, b);
 					end loop;
 					contador_de_linha := contador_de_linha - 1;
+				else -- caso esteja, aumenta os pontos do jogador e incrementa a quantidade de linhas eliminadas (sendo o maximo de contagem de 10 linhas)
+					if(score0 = 9) then -- ifs aninhados que atualizam cada um dos bcds 
+						score0 <= 0;
+						if(score1 = 9) then 
+							score1 <= 0;
+							if(score2 = 9) then 
+								score2 <= 0;
+								score3 <= score3 + 1;
+							else 
+								score2 <= score2 + 1;
+							end if;
+						else 
+							score1 <= score1 + 1;
+						end if;
+					else	
+						score0 <= score0 + 1;
+					end if;
+					
+					if(line_kill_counter < 10) then 
+						line_kill_counter <= line_kill_counter + 1;
+					elsif(line_kill_counter = 10) then
+						line_kill_counter <= 1; -- considerando o valor max sendo 10, ao chegar nele, volta pra 1.
+					end if;
 				end if;
 			end loop;
 			
@@ -91,4 +117,14 @@ begin
 			MT_preenchida <= '0';
 		end if;
 	end process;
+	
+	SPEEDUP_PROCESS: process(line_kill_counter, clk) -- processo que cuida de ligar e desligar o sinal que indica que o temporizador deve acelerar
+	begin
+		if(rising_edge(clk) and (line_kill_counter = 10) and (speedup = '0')) then -- de 10 em 10 linhas eliminadas, aumena a velocidade
+			speedup <= '1';
+		elsif(rising_edge(clk) and (speedup = '1')) then
+			speedup <= '0';
+		end if;
+	end process;
+	
 end behavior;
