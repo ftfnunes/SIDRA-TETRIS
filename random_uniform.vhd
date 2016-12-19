@@ -4,9 +4,9 @@ use ieee.numeric_std.all;
 
 
 entity random_uniform is
-    generic (OUT_WIDTH : integer := 7);
+    generic (OUT_WIDTH : integer := 3);
     Port ( clk : in  STD_LOGIC;
-           random :  out  integer range 0 to (OUT_WIDTH-1);
+           random :  out  std_logic_vector(OUT_WIDTH-1 downto 0);
             SEED : in STD_LOGIC_VECTOR(30 downto 0):= (others => '0');
 			  reset : in  STD_LOGIC);
 end random_uniform;
@@ -30,10 +30,9 @@ end if;
 end process;
 
 process (rand) begin
-	if (to_integer(unsigned(rand(OUT_WIDTH-1 downto 0))) = 7) then
-		random <= 6;
-	else
-		random <= to_integer(unsigned(rand(OUT_WIDTH-1 downto 0)));
+	random <= rand(OUT_WIDTH-1 downto 0);
+	if (rand(OUT_WIDTH-1 downto 0) = "111") then
+		random <= "110";
 	end if;
 end process;
 end Behavioral;

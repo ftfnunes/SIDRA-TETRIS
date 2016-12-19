@@ -27,7 +27,7 @@ BEGIN
 			when 7=> segment7 <="0001111";  -- '7'
 			when 8=> segment7 <="0000000";  -- '8'
 			when 9=> segment7 <="0000100";  -- '9'
-			 --nothing is displayed when a number more than 9 is given as input. 
+			 --nothing is displayed when a number greater than 9 is given as input. 
 			when others=> segment7 <="1111111"; 
 		end case;
 	end if;

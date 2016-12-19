@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity active_block is
 	port(
 		clk, control_clk, start, collision, wren, right_move, left_move: in std_logic;
-		block_type: in integer range 0 to 6;
+		block_type: in std_logic_vector(2 downto 0);
 		i1, i2 , i3, i4: in integer range -2 to 19;
 		j1, j2, j3, j4: in integer range 0 to 9;
 		i1out, i2out , i3out, i4out: out integer range -2 to 19;
@@ -30,54 +30,60 @@ begin
 	if(rising_edge(clk)) then
 		if(start = '1' or collision = '1') then
 			case block_type is
-				when 0 => 
+				when "000" => 
 			-- 		The type 0 is the bar: (i1-j1)(i2-j2)(i3-j3)(i4-j4)
 						i1out <= -2; i2out <= -2; i3out <= -2; i4out <= -2;
 						i1buf <= -2; i2buf <= -2; i3buf <= -2; i4buf <= -2;
 						j1out <= 3; j2out <= 4; j3out <= 5; j4out <= 6;
 						j1buf <= 3; j2buf <= 4; j3buf <= 5; j4buf <= 6;
-				when 1 =>
+				when "001" =>
 			--			The type 1 is: 		(i1-j1)
 			--										(i2-j2)(i3-j3)(i4-j4)
 						i1out <= -2; i2out <= -1; i3out <= -1; i4out <= -1;
 						i1buf <= -2; i2buf <= -1; i3buf <= -1; i4buf <= -1;					
 						j1out <= 4; j2out <= 4; j3out <= 5; j4out <= 6;
 						j1buf <= 4; j2buf <= 4; j3buf <= 5; j4buf <= 6;
-				when 2 =>
+				when "010" =>
 			--			The type 2 is: 				 		  (i1-j1)
 			--										(i2-j2)(i3-j3)(i4-j4)
 						i1out <= -2; i2out <= -1; i3out <= -1; i4out <= -1;
 						i1buf <= -2; i2buf <= -1; i3buf <= -1; i4buf <= -1;
 						j1out <= 6; j2out <= 4; j3out <= 5; j4out <= 6;
 						j1buf <= 6; j2buf <= 4; j3buf <= 5; j4buf <= 6;
-				when 3 =>
+				when "011" =>
 			--			The type 3 is:		 	(i1-j1)(i2-j2)
 			--										(i3-j3)(i4-j4)
 						i1out <= -2; i2out <= -2; i3out <= -1; i4out <= -1;
 						i1buf <= -2; i2buf <= -2; i3buf <= -1; i4buf <= -1;
 						j1out <= 4; j2out <= 5; j3out <= 4; j4out <= 5;
 						j1buf <= 4; j2buf <= 5; j3buf <= 4; j4buf <= 5;
-				when 4 =>
+				when "100" =>
 			--			The type 4 is:        	 	 (i1-j1)(i2-j2)
 			--										(i3-j3)(i4-j4)			
 						i1out <= -2; i2out <= -2; i3out <= -1; i4out <= -1;
 						i1buf <= -2; i2buf <= -2; i3buf <= -1; i4buf <= -1;
 						j1out <= 6; j2out <= 7; j3out <= 5; j4out <= 6;
 						j1buf <= 6; j2buf <= 7; j3buf <= 5; j4buf <= 6;
-				when 5 =>
+				when "101" =>
 			--			The type 5 is:     		    (i1-j1)
 			--										(i2-j2)(i3-j3)(i4-j4)
 						i1out <= -2; i2out <= -1; i3out <= -1; i4out <= -1;
 						i1buf <= -2; i2buf <= -1; i3buf <= -1; i4buf <= -1;
 						j1out <= 5; j2out <= 4; j3out <= 5; j4out <= 6;
 						j1buf <= 5; j2buf <= 4; j3buf <= 5; j4buf <= 6;
-				when 6 =>
+				when "110" =>
 			--			The type 6 is: (i1-j1)(i2-j2)
 			--										 (i3-j3)(i4-j4)
 						i1out <= -2; i2out <= -2; i3out <= -1; i4out <= -1;
 						i1buf <= -2; i2buf <= -2; i3buf <= -1; i4buf <= -1;
 						j1out <= 4; j2out <= 5; j3out <= 5; j4out <= 6;
 						j1buf <= 4; j2buf <= 5; j3buf <= 5; j4buf <= 6;
+				when others =>
+			-- 		The type is expected to never be reached
+						i1out <= -2; i2out <= -2; i3out <= -2; i4out <= -2;
+						i1buf <= -2; i2buf <= -2; i3buf <= -2; i4buf <= -2;
+						j1out <= 4; j2out <= 4; j3out <= 4; j4out <= 4;
+						j1buf <= 4; j2buf <= 4; j3buf <= 4; j4buf <= 4;
 			end case;
 		end if;
 		
