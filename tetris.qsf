@@ -135,6 +135,15 @@ set_location_assignment PIN_F4 -to sgmt_block_number[5]
 set_location_assignment PIN_E4 -to sgmt_block_number[6]
 set_location_assignment PIN_K2 -to sgmt_block_number[7]
 
+set_location_assignment PIN_K3 -to HEX7[0]
+set_location_assignment PIN_J1 -to HEX7[1]
+set_location_assignment PIN_J2 -to HEX7[2]
+set_location_assignment PIN_H1 -to HEX7[3]
+set_location_assignment PIN_H2 -to HEX7[4]
+set_location_assignment PIN_H3 -to HEX7[5]
+set_location_assignment PIN_G1 -to HEX7[6]
+set_location_assignment PIN_G2 -to HEX7[7]
+
 set_location_assignment PIN_C15 -to n_blank
 set_location_assignment PIN_D24 -to pixel_clk
 set_location_assignment PIN_J19 -to h_sync
