@@ -10,7 +10,7 @@ end ffd;
 
 architecture behavior of ffd is
 begin		
-	process(clk)
+	process(clk, rst)
 	begin
 		if(rst = '1') then 
 			data_out <= '0';

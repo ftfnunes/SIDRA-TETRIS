@@ -9,7 +9,7 @@ entity active_block is
 		i1, i2 , i3, i4: in integer range -2 to 19;
 		j1, j2, j3, j4: in integer range 0 to 9;
 		i1out, i2out , i3out, i4out: out integer range -2 to 19;
-		j1out, j2out, j3out, j4out: out integer range 0 to 9		
+		j1out, j2out, j3out, j4out: out integer range 0 to 9
 	);
 end entity;
 
