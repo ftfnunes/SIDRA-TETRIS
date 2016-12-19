@@ -44,12 +44,12 @@ begin
 						j1out <= 4; j2out <= 4; j3out <= 5; j4out <= 6;
 						j1buf <= 4; j2buf <= 4; j3buf <= 5; j4buf <= 6;
 				when 2 =>
-			--			The type 2 is: 				 (i1-j1)
+			--			The type 2 is: 				 		  (i1-j1)
 			--										(i2-j2)(i3-j3)(i4-j4)
 						i1out <= -2; i2out <= -1; i3out <= -1; i4out <= -1;
 						i1buf <= -2; i2buf <= -1; i3buf <= -1; i4buf <= -1;
-						j1out <= 5; j2out <= 4; j3out <= 5; j4out <= 6;
-						j1buf <= 5; j2buf <= 4; j3buf <= 5; j4buf <= 6;
+						j1out <= 6; j2out <= 4; j3out <= 5; j4out <= 6;
+						j1buf <= 6; j2buf <= 4; j3buf <= 5; j4buf <= 6;
 				when 3 =>
 			--			The type 3 is:		 	(i1-j1)(i2-j2)
 			--										(i3-j3)(i4-j4)
