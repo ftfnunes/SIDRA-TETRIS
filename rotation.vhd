@@ -6,12 +6,12 @@ entity rotation is
 	port(
 		clk, roda, isFilled: in std_logic;
 		block_type: in integer range 0 to 6;
-		i1, i2, i3, i4: in integer range 0 to 19;
+		i1, i2, i3, i4: in integer range -2 to 19;
 		j1, j2, j3, j4: in integer range 0 to 9;
 		makeRotation, rotating: out std_logic;
 		i: buffer integer range 0 to 19;
 		j: buffer integer range 0 to 9;
-		i1out, i2out, i3out, i4out: out integer range 0 to 19;
+		i1out, i2out, i3out, i4out: out integer range -2 to 19;
 		j1out, j2out, j3out, j4out: out integer range 0 to 9
 	);
 end entity;
@@ -44,6 +44,11 @@ begin
 		j <= 6;
 		end if;
 		
+		if(((i1 + 3) > 9) and i1 = i4) then
+				i <= i4;
+				j <= j4;
+		end if;
+		
 		block0count <= 1;
 		
 	elsif(rising_edge(clk) and block_type = 0 and block0count = 1) then
@@ -57,6 +62,10 @@ begin
 		if(i1 = i2) then
 			i <= i1 + 1;
 			j <= j1;
+			if((i1 + 3) > 9) then
+				i <= i2;
+				j <= j2;
+			end if;
 		elsif(j1 > 6 and j1 = j2) then
 			i <= i1;
 			j <= 7;
@@ -77,6 +86,10 @@ begin
 		if(i1 = i3) then
 			i <= i1 + 2;
 			j <= j1;
+			if((i1 + 3) > 9) then
+				i <= i3;
+				j <= j3;
+			end if;
 		elsif(j1 > 6 and j1 = j2) then
 			i <= i1;
 			j <= 8;
@@ -98,6 +111,10 @@ begin
 		if(i1 = i4) then
 			i <= i1 + 3;
 			j <= j1;
+			if((i1 + 3) > 9) then
+				i <= i4;
+				j <= j4;
+			end if;
 		elsif(j1 > 6 and j1 = j2) then
 			i <= i1;
 			j <= 9;
@@ -249,7 +266,7 @@ begin
 			end if;
 		end if;
 		
-		block1count <= 3;
+		block1count <= 4;
 	
 	elsif(rising_edge(clk) and block_type = 1 and block1count = 4) then
 		if(isFilled = '1') then
