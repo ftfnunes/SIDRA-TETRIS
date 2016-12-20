@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 use ieee.math_real.all;
 
 entity tetris is PORT(
-	 clk, tst_clk		 	:  IN	STD_LOGIC;
+	 clk, tst_clk, right_b, left_b, down_b, rotate_b	:  IN	STD_LOGIC;
 	 pixel_clk		:	OUT STD_LOGIC;	 
 	 red      		:  OUT  STD_LOGIC_VECTOR(7 DOWNTO 0);  --red magnitude output to DAC
 	 green    		:  OUT  STD_LOGIC_VECTOR(7 DOWNTO 0);  --green magnitude output to DAC
@@ -143,6 +143,25 @@ component side_moves is
 	);
 end component;
 
+component binary_counter is
+
+	generic
+	(
+		MIN_COUNT : natural := 0;
+		MAX_COUNT : natural := 20000000
+	);
+
+	port
+	(
+		clk		  : in std_logic;
+		reset	  : in std_logic;
+		enable	  : in std_logic;
+		q		  : out integer range MIN_COUNT to MAX_COUNT
+	);
+
+end component;
+
+
 signal row, column : INTEGER;
 signal c0, d_en, d_out_vga, d_out1, d_out2, d_in, rnd_rst, s_work : STD_LOGIC;
 signal collision, w_en, control_clk, start, wren_active, r_m, l_m, speedup, t_collision, lMove, rMove, rotates, wren_Block, gameOver: STD_LOGIC := '0';
@@ -153,10 +172,41 @@ signal j_vga, j_r1, j_r2, j_wr : integer range 0 to 9;
 signal score3, score2, score1, score0 : integer range 0 to 9;
 signal block_type, current_block_type, next_block_type : std_logic_vector (2 downto 0);
 signal seed : STD_LOGIC_VECTOR(30 downto 0); 
-signal new_block : std_logic;
+signal new_block, aux_left_b, aux_right_b : std_logic;
 signal r_s: integer range 0 to 5;
 begin
 
+	process (clk) begin
+		if(start = '1') then
+			lMove <= '0';
+			rMove <= '0';
+		elsif(rising_edge(clk) and aux_left_b = '1' and lMove = '0') then
+			lMove <= '1';
+		elsif(rising_edge(clk) and lMove = '1') then
+			lMove <= '0';
+		elsif(rising_edge(clk) and aux_right_b = '1' and rMove = '0') then
+			rMove <= '1';
+		elsif(rising_edge(clk) and rMove = '1') then
+			rMove <= '0';
+		end if;
+	end process;
+	
+	process (left_b, lMove, start) begin
+		if(lMove = '1' or start = '1') then
+			aux_left_b <= '0';
+		elsif(rising_edge(left_b)) then
+			aux_left_b <= '1';
+		end if;
+	end process;
+	
+	process (right_b, rMove, start) begin
+		if (rMove = '1' or start = '0') then
+			aux_right_b <= '0';
+		elsif(rising_edge(right_b)) then
+			aux_right_b <= '1';
+		end if;
+	end process;
+	
 	turnoff_dot <= (others => '1');
 	pixel_clk <= c0;
 	
@@ -167,57 +217,34 @@ begin
 	p: pll port map ('0', clk, c0);
 	c: vga_controller port map (c0, '1', h_sync, v_sync, d_en, column, row, n_blank, n_sync);
 	ig: image_generator port map (d_en, row, column,  i1_active, i2_active, i3_active, i4_active, j1_active, j2_active, j3_active, j4_active, d_out_vga, red, green, blue, i_vga, j_vga);
-	t : campo port map (w_en, tst_clk, '0', collision, i_vga, j_vga, i_wr, j_wr, i_r1, j_r1, i_r2, j_r2, '1', d_out_vga, d_out1, d_out2, speedup, score3, score2, score1, score0);
-	ab : active_block port map (tst_clk, control_clk, start, collision, wren_active, r_m, l_m, current_block_type, i1, i2, i3, i4, j1, j2, j3, j4, i1_active, i2_active, i3_active, i4_active, j1_active, j2_active, j3_active, j4_active);
-	rand : random_uniform port map (tst_clk, block_type, seed, rnd_rst);
-	cd : collision_detec port map (tst_clk, start, t_collision, d_out1, control_clk, i1_active, i2_active, i3_active, i4_active, j1_active, j2_active, j3_active, j4_active, collision, w_en, gameOver, i_r1, i_wr, j_r1, j_wr);
+	t : campo port map (w_en, clk, '0', collision, i_vga, j_vga, i_wr, j_wr, i_r1, j_r1, i_r2, j_r2, '1', d_out_vga, d_out1, d_out2, speedup, score3, score2, score1, score0);
+	ab : active_block port map (clk, control_clk, start, collision, wren_active, r_m, l_m, current_block_type, i1, i2, i3, i4, j1, j2, j3, j4, i1_active, i2_active, i3_active, i4_active, j1_active, j2_active, j3_active, j4_active);
+	rand : random_uniform port map (clk, block_type, seed, rnd_rst);
+	cd : collision_detec port map (clk, start, t_collision, d_out1, control_clk, i1_active, i2_active, i3_active, i4_active, j1_active, j2_active, j3_active, j4_active, collision, w_en, gameOver, i_r1, i_wr, j_r1, j_wr);
 	bcd_to_7seg_3 : bcd_to_7seg port map (clk, score3, score3_7seg);
 	bcd_to_7seg_2 : bcd_to_7seg port map (clk, score2, score2_7seg);
 	bcd_to_7seg_1 : bcd_to_7seg port map (clk, score1, score1_7seg);
 	bcd_to_7seg_0 : bcd_to_7seg port map (clk, score0, score0_7seg);
 	sides: bcd_to_7seg port map (clk, r_s, r_sHEX);
 	bt_to_7seg	  : blocktype_to_7seg port map (clk, next_block_type, bt_7seg_left, bt_7seg_right, sgmt_block_number);
-	--tmer : timer port map (clk, speedup, start, control_clk, t_collision);
-	s_m : side_moves port map(tst_clk, start, t_collision, d_out2, lMove, rMove, control_clk, i1_active, i2_active, i3_active, i4_active, j1_active, j2_active, j3_active, j4_active, l_m, r_m, s_work, i_r2, j_r2, r_s, coll);
-	
-	
-	
+	tmer : timer port map (clk, speedup, start, control_clk, t_collision);
+	s_m : side_moves port map(clk, start, t_collision, d_out2, lMove, rMove, control_clk, i1_active, i2_active, i3_active, i4_active, j1_active, j2_active, j3_active, j4_active, l_m, r_m, s_work, i_r2, j_r2, r_s, coll);
 	
 	
 	--testes
 	
-	teste_campo: process(tst_clk)
+	teste_campo: process(clk)
 		variable count : INTEGER := 0;
 	begin
-		if(rising_edge(tst_clk)) then
+		if(rising_edge(clk)) then
 			if(count = 0) then
 				start <= '0';
-				lMove <= '0';
-				rMove <= '0';
 				rotates <= '0';
-				t_collision <= '0';
 				wren_active <= '0';
-				control_clk <= '0';
 			elsif	(count = 1) then
 				start <= '1';
 			elsif (count = 2) then
 				start <= '0';
-			elsif (count = 3) then
-				control_clk <= '1';
-			elsif (count = 4) then 
-				control_clk <= '0';
-			elsif (count = 5) then
-				control_clk <= '1';
-			elsif (count = 6) then
-				control_clk <= '0';
-			elsif (count = 7) then
-				rMove <= '1';
-			elsif (count = 8) then
-				rMove <= '0';
-			elsif (count = 9) then
-				lMove <= '1';
-			elsif (count = 10) then
-				lMove <= '0';
 			end if;
 			count := count + 1;
 		end if;

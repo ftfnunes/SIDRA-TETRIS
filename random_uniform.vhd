@@ -7,7 +7,7 @@ entity random_uniform is
     generic (OUT_WIDTH : integer := 3);
     Port ( clk : in  STD_LOGIC;
            random :  out  std_logic_vector(OUT_WIDTH-1 downto 0);
-            SEED : in STD_LOGIC_VECTOR(30 downto 0):= (others => '0');
+            SEED : in STD_LOGIC_VECTOR(30 downto 0);
 			  reset : in  STD_LOGIC);
 end random_uniform;
 
