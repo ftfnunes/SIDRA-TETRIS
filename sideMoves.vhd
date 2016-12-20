@@ -32,7 +32,7 @@ end process;
 
 	move: process(clk)
 	variable sideCollide : STD_logic;
-	variable check_sideL, check_sideR : integer range 0 to 5;
+	variable check_sideL, check_sideR : integer range 0 to 6;
 	begin
 	if(start = '1' or (rMove = '0' and lMove = '0' and check_sideL = 0 and check_sideR = 0)) then
 		left_moveBlock <= '0';
@@ -90,12 +90,15 @@ end process;
 				sideCollide := '1';
 			end if;
 		end if;
-			
-			if(sideCollide = '0') then
-				left_moveBlock <= '1';
-			end if;
+		
 			check_sideL := 5;
 	elsif(rising_edge(clk) and check_sideL = 5) then
+		if(sideCollide = '0') then
+				left_moveBlock <= '1';
+			end if;
+			
+		check_sideL := 6;
+	elsif(rising_edge(clk) and check_sideL = 6) then
 		left_moveBlock <= '0';
 		working <= '0';
 		check_sideL := 0;
@@ -157,6 +160,8 @@ end process;
 		working <= '0';
 		check_sideR:= 0;
 		sideCollide := '0';
+	elsif(rising_edge(clk) and check_sideR = 6) then
+		
 	elsif (rising_edge(clk)) then
 		left_moveBlock <= '0';
 		right_moveBlock <= '0';

@@ -164,7 +164,7 @@ end component;
 
 signal row, column : INTEGER;
 signal c0, d_en, d_out_vga, d_out1, d_out2, d_in, rnd_rst, s_work : STD_LOGIC;
-signal collision, w_en, control_clk, start, wren_active, r_m, l_m, speedup, t_collision, lMove, rMove, rotates, wren_Block, gameOver: STD_LOGIC := '0';
+signal collision, w_en, control_clk, start, wren_active, r_m, l_m, speedup, t_collision, rotates, wren_Block, gameOver, lMove, rMove: STD_LOGIC := '0';
 signal i1_active, i2_active, i3_active, i4_active, i1, i2, i3, i4 : INTEGER range -2 to 19;
 signal j1_active, j2_active, j3_active, j4_active, j1, j2, j3, j4 : INTEGER range 0 to 9;
 signal i_vga, i_r1, i_r2, i_wr : integer range 0 to 19;
@@ -177,10 +177,7 @@ signal r_s: integer range 0 to 5;
 begin
 
 	process (clk) begin
-		if(start = '1') then
-			lMove <= '0';
-			rMove <= '0';
-		elsif(rising_edge(clk) and aux_left_b = '1' and lMove = '0') then
+		if(rising_edge(clk) and aux_left_b = '1' and lMove = '0') then
 			lMove <= '1';
 		elsif(rising_edge(clk) and lMove = '1') then
 			lMove <= '0';
@@ -191,16 +188,16 @@ begin
 		end if;
 	end process;
 	
-	process (left_b, lMove, start) begin
-		if(lMove = '1' or start = '1') then
+	process (left_b, start) begin
+		if(lMove = '1') then
 			aux_left_b <= '0';
 		elsif(rising_edge(left_b)) then
 			aux_left_b <= '1';
 		end if;
 	end process;
 	
-	process (right_b, rMove, start) begin
-		if (rMove = '1' or start = '0') then
+	process (right_b, start) begin
+		if (rMove = '1') then
 			aux_right_b <= '0';
 		elsif(rising_edge(right_b)) then
 			aux_right_b <= '1';
