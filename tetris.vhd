@@ -129,7 +129,7 @@ port (clk : in std_logic;
      );
 end component;
 component timer is
-	port ( clk, speedup, start : in std_logic;
+	port ( clk, speedup, start, gameOver : in std_logic;
 			 control_clk, collision_clk : out std_logic := '0');
 end component;
 
@@ -281,7 +281,7 @@ begin
 	bcd_to_7seg_0 : bcd_to_7seg port map (clk, score0, score0_7seg);
 	sides: bcd_to_7seg port map (clk, r_s, r_sHEX);
 	bt_to_7seg	  : blocktype_to_7seg port map (clk, next_block_type, bt_7seg_left, bt_7seg_right, sgmt_block_number);
-	tmer : timer port map (clk, speedup, start, control_clk, t_collision);
+	tmer : timer port map (clk, speedup, start, gameOver, control_clk, t_collision);
 	s_m : side_moves port map(clk, start, t_collision, d_out2, lMove, rMove, control_clk, i1_active, i2_active, i3_active, i4_active, j1_active, j2_active, j3_active, j4_active, l_m, r_m, s_work, i_r2, j_r2, r_s, coll);
 	rot : rotation port map (clk, rotates, d_out3, to_integer(unsigned(current_block_type)), i1_active, i2_active, i3_active, i4_active, j1_active, j2_active, j3_active, j4_active, wren_active, r_work, i_r3, j_r3, i1, i2, i3, i4, j1, j2, j3, j4);
 	

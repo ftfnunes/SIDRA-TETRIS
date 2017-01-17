@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity timer is
-	port ( clk, speedup, start : in std_logic;
+	port ( clk, speedup, start, gameOver : in std_logic;
 			 control_clk, collision_clk : out std_logic := '0');
 end timer;
 
@@ -12,9 +12,11 @@ architecture behavior of timer is
 	signal base_time : integer range 5000000 to 40000000 := 40000000;
 	signal en : std_logic;
 begin
-	process(start) begin		
-		if(start = '1') then
+	process(start, gameOver) begin		
+		if(start = '1' and gameOver = '0') then
 			en <= '1';
+		elsif(gameOver = '1') then
+			en <= '0';
 		end if;
 	end process;
 	
