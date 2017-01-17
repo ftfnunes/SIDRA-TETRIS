@@ -161,7 +161,7 @@ begin
 			j <= j1;
 		elsif(j1 = j3 and j1 /= j2) then
 			i <= i1 + 1;
-			j <= j1;
+			j <= j1 - 1;
 			if(j1 = 8) then
 			j <= 7;
 			end if;
@@ -221,7 +221,7 @@ begin
 			j <= j3 - 1;
 		elsif(j1 = j3 and j1 /= j2) then
 			i <= i3;
-			j <= j3 + 2;
+			j <= j3 + 1;
 			if(j1 = 8) then
 				j <= 9;
 			end if;
@@ -229,8 +229,8 @@ begin
 			i <= i3 + 1;
 			j <= j3 - 2;
 		else
-			i <= i3 + 1;
-			j <= j3;
+			i <= i3;
+			j <= j3 + 1;
 			if(j1 = 9) then
 				j <= 8;
 			end if;
@@ -251,7 +251,7 @@ begin
 			j <= j4 - 2;
 		elsif(j1 = j3 and j1 /= j2) then
 			i <= i4;
-			j <= j4 + 2;
+			j <= j4 + 1;
 			if(j1 = 8) then
 				j <= 9;
 			end if;

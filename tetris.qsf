@@ -164,6 +164,7 @@ set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tetris_tb -section_id tet
 set_global_assignment -name EDA_TEST_BENCH_FILE tetris_tb.vhd -section_id tetris_tb
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name VHDL_FILE rotation.vhd
 set_global_assignment -name VHDL_FILE blocktype_to_7seg.vhd
 set_global_assignment -name VHDL_FILE tetris_tb.vhd
 set_global_assignment -name VHDL_FILE teste_tb.vhd

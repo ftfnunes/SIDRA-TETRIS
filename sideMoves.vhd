@@ -50,6 +50,13 @@ end process;
 		check_sideR := 0;
 		i <= i1;
 		j <= j1 - 1;
+	elsif(rising_edge(clk) and timer_collision = '0' and rMove = '1' and t_collision = '0' and check_sideL = 0 and check_sideR = 0) then
+		working <= '1';
+		sideCollide := '0';
+		check_sideR := 1;
+		check_sideL := 0;
+		i <= i1;
+		j <= j1 + 1;
 	elsif(rising_edge(clk) and check_sideL = 1) then
 		
 		if((j1) = 0 ) then
@@ -62,6 +69,17 @@ end process;
 			check_sideL := 2;
 			i <= i2;
 			j <= j2 - 1;
+	elsif(rising_edge(clk) and check_sideR = 1) then
+		if(j1 = 9) then
+			sideCollide := '1';
+		else
+			if(isFilled = '1') then
+				sideCollide := '1';
+			end if;
+		end if;
+			check_sideR := 2;
+			i <= i2;
+			j <= j2 + 1;
 	elsif(rising_edge(clk) and check_sideL = 2) then
 		if(j2 = 0) then
 			sideCollide := '1';
@@ -73,6 +91,17 @@ end process;
 			check_sideL := 3;
 			i <= i3;
 			j <= j3 - 1;
+	elsif(rising_edge(clk) and check_sideR = 2) then
+		if(j2 = 9) then
+			sideCollide := '1';
+		else
+			if(isFilled = '1') then
+				sideCollide := '1';
+			end if;
+		end if;
+			check_sideR := 3;
+			i <= i3;
+			j <= j3 + 1;
 	elsif(rising_edge(clk) and check_sideL = 3) then
 		if(j3 = 0) then
 			sideCollide := '1';
@@ -84,6 +113,17 @@ end process;
 			check_sideL := 4;
 			i <= i4;
 			j <= j4 - 1;
+	elsif(rising_edge(clk) and check_sideR = 3) then
+		if(j3 = 9) then
+			sideCollide := '1';
+		else
+			if(isFilled = '1') then
+				sideCollide := '1';
+			end if;
+		end if;
+			check_sideR := 4;
+			i <= i4;
+			j <= j4 + 1;
 	elsif(rising_edge(clk) and check_sideL = 4) then
 		if(j4 = 0) then
 			sideCollide := '1';
@@ -97,51 +137,6 @@ end process;
 				left_moveBlock <= '1';
 			end if;
 			check_sideL := 5;
-	elsif(rising_edge(clk) and check_sideL = 5) then
-		left_moveBlock <= '0';
-		working <= '0';
-		check_sideL := 0;
-		sideCollide := '0';
-	elsif(rising_edge(clk) and timer_collision = '0' and rMove = '1' and t_collision = '0' and check_sideL = 0 and check_sideR = 0) then
-		working <= '1';
-		sideCollide := '0';
-		check_sideR := 1;
-		check_sideL := 0;
-		i <= i1;
-		j <= j1 + 1;
-	elsif(rising_edge(clk) and check_sideR = 1) then
-		if(j1 = 9) then
-			sideCollide := '1';
-		else
-			if(isFilled = '1') then
-				sideCollide := '1';
-			end if;
-		end if;
-			check_sideR := 2;
-			i <= i2;
-			j <= j2 + 1;
-	elsif(rising_edge(clk) and check_sideR = 2) then
-		if(j2 = 9) then
-			sideCollide := '1';
-		else
-			if(isFilled = '1') then
-				sideCollide := '1';
-			end if;
-		end if;
-			check_sideR := 3;
-			i <= i3;
-			j <= j3 + 1;
-	elsif(rising_edge(clk) and check_sideR = 3) then
-		if(j3 = 9) then
-			sideCollide := '1';
-		else
-			if(isFilled = '1') then
-				sideCollide := '1';
-			end if;
-		end if;
-			check_sideR := 4;
-			i <= i4;
-			j <= j4 + 1;
 	elsif(rising_edge(clk) and check_sideR = 4) then
 		if(j4 = 9) then
 			sideCollide := '1';
@@ -154,6 +149,11 @@ end process;
 			right_moveBlock <= '1';
 		end if;
 		check_sideR := 5;
+	elsif(rising_edge(clk) and check_sideL = 5) then
+		left_moveBlock <= '0';
+		working <= '0';
+		check_sideL := 0;
+		sideCollide := '0';	
 	elsif(rising_edge(clk) and check_sideR = 5) then
 		right_moveBlock <= '0';
 		working <= '0';
