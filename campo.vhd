@@ -11,11 +11,14 @@ entity campo is
 			 i_read1 : in integer range 0 to 19; 
 			 j_read1 : in integer range 0 to 9; 
 			 i_read2 : in integer range 0 to 19; 
-			 j_read2 : in integer range 0 to 9; 
+			 j_read2 : in integer range 0 to 9;
+			 i_read3 : in integer range 0 to 19; 
+			 j_read3 : in integer range 0 to 9;  
 			 data_in : in std_logic;
 			 data_out_vga : out std_logic := '0';
 			 data_out1 : out std_logic := '0';
 			 data_out2 : out std_logic := '0';
+			 data_out3 : out std_logic := '0';
 			 speedup : buffer std_logic := '0';
 			 score3, score2, score1, score0 : buffer integer range 0 to 9 := 0);
 end campo;
@@ -54,7 +57,7 @@ begin
 	data_out_vga <= Matriz_Campo(i_vga, j_vga);
 	data_out1 <= Matriz_Campo(i_read1, j_read1);
 	data_out2 <= Matriz_Campo(i_read2, j_read2);
-	
+	data_out3 <= Matriz_Campo(i_read3, j_read3);
 	-------------------------------- TESTE
 --	MT_Preenchida <= '1';
 		

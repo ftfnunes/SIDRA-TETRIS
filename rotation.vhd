@@ -44,7 +44,7 @@ begin
 		j <= 6;
 		end if;
 		
-		if(((i1 + 3) > 9) and i1 = i4) then
+		if(((i1 + 3) > 19) and i1 = i4) then
 				i <= i4;
 				j <= j4;
 		end if;
@@ -62,7 +62,7 @@ begin
 		if(i1 = i2) then
 			i <= i1 + 1;
 			j <= j1;
-			if((i1 + 3) > 9) then
+			if(((i1 + 3) > 19) and i1 = i4) then
 				i <= i2;
 				j <= j2;
 			end if;
@@ -86,7 +86,7 @@ begin
 		if(i1 = i3) then
 			i <= i1 + 2;
 			j <= j1;
-			if((i1 + 3) > 9) then
+			if(((i1 + 3) > 19) and i1 = i4) then
 				i <= i3;
 				j <= j3;
 			end if;
@@ -111,7 +111,7 @@ begin
 		if(i1 = i4) then
 			i <= i1 + 3;
 			j <= j1;
-			if((i1 + 3) > 9) then
+			if(((i1 + 3) > 19) and i1 = i4) then
 				i <= i4;
 				j <= j4;
 			end if;
@@ -165,7 +165,7 @@ begin
 			if(j1 = 8) then
 			j <= 7;
 			end if;
-		elsif(j3 = j4 and i1 = i2 and i3 /= i3) then
+		elsif(j3 = j4 and i1 = i2 and i3 /= i4) then
 			i <= i1 - 1;
 			j <= j1 + 1;
 		else
@@ -195,7 +195,7 @@ begin
 			if(j1 = 8) then
 				j <= 8;
 			end if;
-		elsif(j3 = j4 and i1 = i2 and i3 /= i3) then
+		elsif(j3 = j4 and i1 = i2 and i3 /= i4) then
 			i <= i2;
 			j <= j2;
 		else
@@ -225,7 +225,7 @@ begin
 			if(j1 = 8) then
 				j <= 9;
 			end if;
-		elsif(j3 = j4 and i1 = i2 and i3 /= i3) then
+		elsif(j3 = j4 and i1 = i2 and i3 /= i4) then
 			i <= i3 + 1;
 			j <= j3 - 2;
 		else
@@ -255,7 +255,7 @@ begin
 			if(j1 = 8) then
 				j <= 9;
 			end if;
-		elsif(j3 = j4 and i1 = i2 and i3 /= i3) then
+		elsif(j3 = j4 and i1 = i2 and i3 /= i4) then
 			i <= i4;
 			j <= j4 - 1;
 		else
